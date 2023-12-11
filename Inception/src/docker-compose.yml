@@ -5,7 +5,7 @@ volumes:
     name: worpress
     driver: local
     driver_opts:
-      device: /Users/${USER}/Desktop/Inception/src/wordpress
+      device: Users/jasmi/Documents/Docker/Inception/src/wordpress
       o: bind
       type: none
 
@@ -13,25 +13,25 @@ volumes:
     name: mariadb
     driver: local
     driver_opts:
-      device: /Users/${USER}/Desktop/Inception/src/mariadb
+      device: Users/jasmi/Documents/Docker/Inception/src/mariadb
       o: bind
       type: none
 
-  networks:
-    inception:
-      name: inception
+networks:
+  inception:
+    name: inception
 
 services:
   nginx:
     container_name: nginx
-    build: ./src/requirements/nginx/Dockerfile
+    build: ./requirements/nginx/.
     image: nginx:42
     ports:
       - "443:443"
     depends_on:
       - mariadb
     volumes:
-      - ./nginx/etc/nginx/conf.d
+      - wordpress:/var/www/html
     networks: 
       - inception
     env_file:
@@ -40,9 +40,10 @@ services:
 
   mariadb:
     container_name: mariadb
-    build: ./src/requirements/MariaDB/Dockerfile
+    build: ./requirements/MariaDB/.
     image: mariadb:42
-    volumes: ./mariadb:/var/lib/mysql
+    volumes:
+      - ./mariadb:/var/lib/mysql
     env_file:
       - .env
     networks:
@@ -51,7 +52,7 @@ services:
   
   wordpress:
     container_name: wordpress
-    build: ./src/requirements/Wordpress/Dockerfile
+    build: ./requirements/Wordpress/.
     image: wordpress:42
     volumes:
       - wordpress:/var/www/html
