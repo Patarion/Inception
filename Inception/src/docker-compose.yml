@@ -2,7 +2,7 @@ version: '3'
 
 volumes:
   wordpress:
-    name: worpress
+    name: wordpress
     driver: local
     driver_opts:
       device: Users/jasmi/Documents/Docker/Inception/src/wordpress
@@ -19,7 +19,7 @@ volumes:
 
 networks:
   inception:
-    name: inception
+    driver: bridge
 
 services:
   nginx:
@@ -27,6 +27,7 @@ services:
     build: ./requirements/nginx/.
     image: nginx:42
     ports:
+      - "80:80"
       - "443:443"
     depends_on:
       - mariadb
@@ -36,7 +37,7 @@ services:
       - inception
     env_file:
       - .env
-    restart: always
+    restart: on-failure
 
   mariadb:
     container_name: mariadb
@@ -48,7 +49,7 @@ services:
       - .env
     networks:
       - inception
-    restart: always
+    restart: on-failure
   
   wordpress:
     container_name: wordpress
@@ -60,4 +61,4 @@ services:
       - .env
     networks:
       - inception
-    restart: always
+    restart: on-failure
