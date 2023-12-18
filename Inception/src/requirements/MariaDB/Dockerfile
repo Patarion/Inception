@@ -1,23 +1,19 @@
 FROM debian:buster
 
-RUN apt-get update && apt-get install mariadb-server -y && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update && apt-get install -y aptitude && aptitude install -y mariadb-server mariadb-client vim && rm -rf /var/lib/apt/lists/*
 
-COPY ./tools/50-server.cnf /etc/mysql/mariadb.conf.d/
-COPY ./tools/mysql_setup.sql /usr/local/mysql/mysql_setup.sql
+COPY ./tools/mysql_setup.sql /usr/local/bin/mysql_setup.sql
 COPY ./tools/install_db.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/mysql_setup.sql
+RUN chmod +x /usr/local/bin/install_db.sh
 
-RUN test -f /etc/mysql/mariadb.conf.d/50-server.cnf && \
-    chmod 644 /etc/mysql/mariadb.conf.d/50-server.cnf
 
-RUN test -f /usr/local/mysql/mysql_setup.sql && \
-    sed -i 's/\r//g' /usr/local/mysql/mysql_setup.sql
-
-RUN test -f /usr/local/bin/install_db.sh && \
-    sed -i 's/\r//g' /usr/local/bin/install_db.sh && \
-    chmod +x /usr/local/bin/install_db.sh
+RUN mkdir -p /var/run/mysqld \
+&& chown -R mysql:mysql /var/run/mysqld \
+&& chmod 777 /var/run/mysqld
 
 EXPOSE 3306
 
-ENTRYPOINT [ "/usr/local/bin/install_db.sh" ]
+#ENTRYPOINT [ "/usr/local/bin/install_db.sh" ]
 
-CMD [ "/usr/bin/mysqld", "--console" ]
+CMD [ "mysqld", "--bind-address=0.0.0.0"]

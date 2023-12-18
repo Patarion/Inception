@@ -5,7 +5,7 @@ volumes:
     name: wordpress
     driver: local
     driver_opts:
-      device: Users/jasmi/Documents/Docker/Inception/src/wordpress
+      device: ${PWD}/src/wordpress
       o: bind
       type: none
 
@@ -13,7 +13,7 @@ volumes:
     name: mariadb
     driver: local
     driver_opts:
-      device: Users/jasmi/Documents/Docker/Inception/src/mariadb
+      device: ${PWD}/src/mariadb
       o: bind
       type: none
 
@@ -27,10 +27,9 @@ services:
     build: ./requirements/nginx/.
     image: nginx:42
     ports:
-      - "80:80"
       - "443:443"
     depends_on:
-      - mariadb
+      - wordpress
     volumes:
       - wordpress:/var/www/html
     networks: 
@@ -55,6 +54,8 @@ services:
     container_name: wordpress
     build: ./requirements/Wordpress/.
     image: wordpress:42
+    depends_on:
+      - mariadb
     volumes:
       - wordpress:/var/www/html
     env_file:

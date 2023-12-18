@@ -15,6 +15,7 @@ start :
 reset:
 	@docker-compose -f ./src/docker-compose.yml down
 	@docker image rm nginx:42 wordpress:42 mariadb:42
+	@docker volume prune -f
 
 status : 
 	@docker ps
